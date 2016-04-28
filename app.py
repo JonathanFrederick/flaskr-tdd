@@ -1,4 +1,5 @@
-from flask import Flask
+from flask import Flask, request, session, g, redirect, url_for, \
+    abort, render_template, flash, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 import os
 
@@ -7,12 +8,7 @@ app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFCATIONS'] = False
 db = SQLAlchemy(app)
 
-from models import Result
-
-
-@app.route("/")
-def hello():
-    return "Hello, World!"
 
 if __name__ == "__main__":
     app.run()
+#
