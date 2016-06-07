@@ -1,22 +1,58 @@
-from app import app
+import app
 import os
+import re
 import unittest
+import tempfile
 import psycopg2
+
+
+def name_from_uri(self, uri):
+    """A helper function to retrieve the database name from
+    the end of the uri"""
+    return re.search(r'/\w+$', uri).group(0)[1:]
 
 
 class BasicTestCase(unittest.TestCase):
 
     def test_index(self):
-        tester = app.test_client(self)
+        tester = app.app.test_client(self)
         response = tester.get('/', content_type='html/text')
         self.assertEqual(response.status_code, 404)
 
     def test_database(self):
         conn = psycopg2.connect(database='flaskr_tdd')
         cursor = conn.cursor()
+        # TODO: figure out a better string of sql commands
         cursor.execute("select relname from pg_class where relkind='r' and relname !~ '^(pg_|sql_)';")
-        self.assertTrue(cursor.fetchall())
+        self.assertIsInstance(cursor.fetchall(), list)
 
+
+class FlaskrTestCase(unittest.TestCase):
+
+    def setUp(self):
+        """Set up a blank test database before each test"""
+        self.db_name = self.name_from_uri(os.environ['TEST_DATABASE_URL'])
+        # self.db_fd, app.app.config['DATABASE'] = tempfile.mkstemp()
+        app.app.config['TESTING'] = True
+        self.app = app.app.test_client()
+        app.init_db(self.db_name)
+
+    def tearDown(self):
+        """Destroy test database after each test"""
+        # os.close(self.db_fd)
+        # os.unlink(app.app.config['DATABASE'])
+        app.drop_db(self.db_name)
+
+    def login(self, username, password):
+        """Login helper function"""
+        return self.app.post('/login', data=dict(
+            username=username,
+            password=password
+        ), follow_redirects=True)
+
+    def logout(self):
+        """Logout helper function"""
+        return self.app.get('/logout', follow_redirects=True)
 
 
 if __name__ == '__main__':
