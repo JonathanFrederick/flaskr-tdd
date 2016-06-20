@@ -1,15 +1,9 @@
 import app
 import os
-import re
 import unittest
 import tempfile
 import psycopg2
-
-
-def name_from_uri(uri):
-    """A helper function to retrieve the database name from
-    the end of the uri"""
-    return re.search(r'/\w+$', uri).group(0)[1:]
+from app import name_from_uri
 
 
 class BasicTestCase(unittest.TestCase):
