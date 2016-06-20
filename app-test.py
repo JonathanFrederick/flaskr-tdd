@@ -51,6 +51,11 @@ class FlaskrTestCase(unittest.TestCase):
         """Logout helper function"""
         return self.app.get('/logout', follow_redirects=True)
 
+    def test_empty_db(self):
+        """Ensure database is blank"""
+        rv = self.app.get('/')
+        assert b'No entries here so far' in rv.data
+
 
 if __name__ == '__main__':
     unittest.main()
