@@ -6,7 +6,7 @@ import tempfile
 import psycopg2
 
 
-def name_from_uri(self, uri):
+def name_from_uri(uri):
     """A helper function to retrieve the database name from
     the end of the uri"""
     return re.search(r'/\w+$', uri).group(0)[1:]
@@ -31,16 +31,13 @@ class FlaskrTestCase(unittest.TestCase):
 
     def setUp(self):
         """Set up a blank test database before each test"""
-        self.db_name = self.name_from_uri(os.environ['TEST_DATABASE_URL'])
-        # self.db_fd, app.app.config['DATABASE'] = tempfile.mkstemp()
+        self.db_name = name_from_uri(os.environ['TEST_DATABASE_URL'])
         app.app.config['TESTING'] = True
         self.app = app.app.test_client()
         app.init_db(self.db_name)
 
     def tearDown(self):
         """Destroy test database after each test"""
-        # os.close(self.db_fd)
-        # os.unlink(app.app.config['DATABASE'])
         app.drop_db(self.db_name)
 
     def login(self, username, password):
