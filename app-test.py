@@ -3,7 +3,7 @@ import os
 import unittest
 import tempfile
 import psycopg2
-from app import name_from_uri
+from app import name_from_uri, connect_db
 
 
 class BasicTestCase(unittest.TestCase):
@@ -14,8 +14,8 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_database(self):
-        conn = psycopg2.connect(database='flaskr_tdd')
-        cursor = conn.cursor()
+        # conn = psycopg2.connect(database='flaskr_tdd')
+        cursor = connect_db()
         # TODO: figure out a better string of sql commands
         cursor.execute("select relname from pg_class where relkind='r' and relname !~ '^(pg_|sql_)';")
         self.assertIsInstance(cursor.fetchall(), list)

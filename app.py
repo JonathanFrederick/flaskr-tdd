@@ -33,11 +33,17 @@ def drop_db(db_name=DATABASE):
     session.execute('DROP DATABASE {};'.format(db_name))
     session.connection().connection.set_isolation_level(1)
 
+
 def name_from_uri(uri):
     """A helper function to retrieve the database name from
     the end of the uri"""
     return re.search(r'/\w+$', uri).group(0)[1:]
 
+
+def connect_db():
+    conn = psycopg2.connect(database=name_from_uri(os.environ['DATABASE_URL']))
+    cursor = conn.cursor()
+    return cursor
 
 if __name__ == "__main__":
     app.run()
