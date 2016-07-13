@@ -3,6 +3,7 @@ import os
 import unittest
 import tempfile
 import psycopg2
+import re
 from app import name_from_uri, connect_db
 
 
@@ -48,7 +49,10 @@ class FlaskrTestCase(unittest.TestCase):
     def test_empty_db(self):
         """Ensure database is blank"""
         rv = self.app.get('/')
-        assert b'No entries here so far' in rv.data
+        assert b'<em>No entries here so far</em>' in rv.data
+        assert b'<ul class="entries">\n    <li><h2>' not in rv.data
+
+
 
 
 if __name__ == '__main__':
