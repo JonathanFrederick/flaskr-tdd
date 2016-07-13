@@ -45,5 +45,11 @@ def connect_db():
     cursor = conn.cursor()
     return cursor
 
+
+@app.route('/')
+def show_entries():
+    """Searches the database for entries, then displays them."""
+    return render_template('index.html')
+
 if __name__ == "__main__":
     app.run()
