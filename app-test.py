@@ -4,7 +4,8 @@ import unittest
 import tempfile
 import psycopg2
 import re
-from app import name_from_uri, connect_db
+from app import name_from_uri, connect_db, db
+from models import Posting
 
 
 class BasicTestCase(unittest.TestCase):
@@ -51,6 +52,19 @@ class FlaskrTestCase(unittest.TestCase):
         rv = self.app.get('/')
         assert b'<em>No entries here so far</em>' in rv.data
         assert b'<ul class="entries">\n    <li><h2>' not in rv.data
+
+    def test_db_entries_display(self):
+        """Ensure that if there are entries, they display"""
+        title = "TITLE"
+        text = "THIS IS SOME TEXT"
+        posting = Posting(title=title, text=text)
+        db.session.add(posting)
+        db.session.commit()
+        rv = self.app.get('/')
+        assert b'<em>No entries here so far</em>' not in rv.data
+        assert b'<ul class="entries">\n    <li><h2>' in rv.data
+
+
 
 
 
