@@ -51,7 +51,8 @@ def connect_db():
 @app.route('/')
 def show_entries():
     """Searches the database for entries, then displays them."""
-    return render_template('index.html')
+    entries = db.session.query(Posting).all()
+    return render_template('index.html', entries=entries)
 
 if __name__ == "__main__":
     app.run()
