@@ -2,7 +2,9 @@
 <html>
 <body>
   <ul class="entries">
-    <em>No entries here so far</em>
+    {% for entry in entries %}<li><h2></li></h2>
+    {% else %}<em>No entries here so far</em>
+    {% endfor %}
   </ul>
 </body>
 </html>
