@@ -15,6 +15,8 @@ app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFCATIONS'] = False
 db = SQLAlchemy(app)
 
+from models import Posting
+
 
 def init_db(db_name=DATABASE):
     """Function to create a database"""
