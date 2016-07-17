@@ -8,7 +8,6 @@ class Posting(db.Model):
     title = db.Column(db.String())
     text = db.Column(db.String())
 
-
     def __init__(self, title, text):
         self.title = title
         self.text = text
