@@ -6,7 +6,9 @@ import psycopg2
 import re
 from app import name_from_uri, connect_db, db
 from models import Posting
+from flask_migrate import upgrade
 
+# TODO: setup testing database
 
 class BasicTestCase(unittest.TestCase):
 
@@ -28,9 +30,16 @@ class FlaskrTestCase(unittest.TestCase):
     def setUp(self):
         """Set up a blank test database before each test"""
         self.db_name = name_from_uri(os.environ['TEST_DATABASE_URL'])
-        app.app.config['TESTING'] = True
+        app.app.config.update(
+            TESTING=True,
+            SQLALCHEMY_DATABASE_URI=os.environ['TEST_DATABASE_URL']
+
+        )
+        upgrade(directory='migrations')
+
         self.app = app.app.test_client()
         app.init_db(self.db_name)
+        self.cursor = app.connect_db()
 
     def tearDown(self):
         """Destroy test database after each test"""
@@ -57,9 +66,8 @@ class FlaskrTestCase(unittest.TestCase):
         """Ensure that if there are entries, they display"""
         title = "TITLE"
         text = "THIS IS SOME TEXT"
-        posting = Posting(title=title, text=text)
-        db.session.add(posting)
-        db.session.commit()
+        self.cursor.execute("INSERT INTO postings (title, text) "
+                            "VALUES ('{}', '{}')".format(title, text))
         rv = self.app.get('/')
         assert b'<em>No entries here so far</em>' not in rv.data
         assert b'<ul class="entries">\n    <li><h2>' in rv.data
