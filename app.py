@@ -10,12 +10,12 @@ from sqlalchemy.orm import sessionmaker
 
 DATABASE = 'flaskr_tdd'
 
-app = Flask(__name__)
-app.config.from_object(os.environ['APP_SETTINGS'])
-app.config['SQLALCHEMY_TRACK_MODIFCATIONS'] = False
-db = SQLAlchemy(app)
 
-from models import Posting
+def create_app(configuration):
+    app = Flask(__name__)
+    app.config.from_object(configuration)
+    app.config['SQLALCHEMY_TRACK_MODIFCATIONS'] = False
+    return app
 
 
 def init_db(db_name=DATABASE):
@@ -48,11 +48,17 @@ def connect_db():
     return cursor
 
 
+app = create_app(os.environ['APP_SETTINGS'])
+db = SQLAlchemy(app)
+from models import Posting
+
+
 @app.route('/')
 def show_entries():
     """Searches the database for entries, then displays them."""
     entries = db.session.query(Posting).all()
     return render_template('index.html', entries=entries)
+
 
 if __name__ == "__main__":
     app.run()
